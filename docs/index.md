@@ -1,37 +1,18 @@
-## Welcome to GitHub Pages
+# Entrance page
 
-You can use the [editor on GitHub](https://github.com/Dniel507/Intective_Plot/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+To this page you should add links to your interactive html-maps that are located under your Exercise-5 repository like the following (*modify the username part* + *notice that **e**xercise starts with lower e -letter *):
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+ `automating-gis-processes.github.io/exercise-5-MyGitHubUserName`
 
-### Markdown
+Here is an example how to do it in MarkDown for user HTenkanen:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](https://dniel507.github.io/Intective_Plot/docs/gmap.html) and ![Image](src)
+```
+[Link to test map](https://dniel507.github.io/Intective_Plot/gmap.html)
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## My maps
 
-### Jekyll Themes
+Add here links to the maps that you have created:
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Dniel507/Intective_Plot/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+ - [Link to test map](https://dniel507.github.io/Intective_Plot/gmap.html)
+ - Replace this with your link
