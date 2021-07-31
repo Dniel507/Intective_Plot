@@ -59,7 +59,7 @@ def multiGeomHandler(multi_geometry, coord_type, geom_type):
     # Return the coordinates
     return coord_arrays
 #---------------------------------------------------------- CENTRO DE VACUNACION ----------------------------------------------------------
-conn = psycopg2.connect(database = "cdv2021", user = "postgres", password = "2021",host = "localhost",port = "5432")
+conn = psycopg2.connect(database = "postgres", user = "postgres", password = "123456",host = "ec2-3-132-216-22.us-east-2.compute.amazonaws.com",port = "5432")
 points = geopandas.GeoDataFrame.from_postgis("SELECT * FROM ubicacion_escuelas WHERE gid <> 3269",conn,geom_col='geom')
 
 #---------------------------------------------------------- EXTRACCION DE VARIABLES X Y
