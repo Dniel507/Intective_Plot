@@ -76,7 +76,12 @@ cdb_hover = HoverTool()
 cdb_hover.tooltips = [('Address of the point', '@nombre')]
 
 edc_hover = HoverTool()
-edc_hover.tooltips = [('Address of the point', '@nombre')]
+edc_hover.tooltips = [('Provincia', '@provincia'),
+                      ('Corregimiento', '@corregimie'),
+                      ('Casos', '@cantidad'),
+                      ('Hospitalizados', '@hospitaliz'),
+                      ('Recuperados', '@recuperado'),
+                      ('Fallecidos', '@fallecido'),]
 
 #---------------------------------------------------------- Map Options
 cdv_map = GMapOptions(lat=8.9824, lng=-79.5199, map_type="roadmap",zoom=7)
