@@ -69,7 +69,7 @@ p_df = points.drop('geom',axis=1).copy()
 p_source = ColumnDataSource(p_df)
 
 #---------------------------------------------------------- CREACION DE VARIABLE MAPA
-output_file("gmap.html")
+output_file("pan_map.html")
 
 #---------------------------------------------------------- TOOPTIP HOVER
 cdb_hover = HoverTool()
@@ -122,16 +122,16 @@ b2= figure(y_range=p2,  plot_width=500, plot_height=500, x_axis_label="Casos de 
 b2.hbar(y=p2, right=cc,left=0,height=0.4,color="orange",fill_alpha=0.5)
 
 l1 = layout(
+    [[b1]],
     [ [cdv] ],
     [ [edc] ],
-    [ [b1]],
     sizing_mode='stretch_width'
 )
 
 l2 = layout(
+    [ [b2] ],
     [ [cdv] ],
     [ [edc] ],
-    [ [b2] ],
     sizing_mode='stretch_width'
 )
 
