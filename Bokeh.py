@@ -2,9 +2,9 @@ import psycopg2
 import geopandas
 import pandas as pd
 import bokeh
-from bokeh.layouts import gridplot
+from bokeh.layouts import gridplot, grid,layout
 from bokeh.plotting import figure, output_file, save, show, gmap
-from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, MultiPolygons, GMapOptions
+from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, MultiPolygons, GMapOptions,BoxAnnotation,Toggle
 from bokeh.palettes import RdYlBu11 as palette
 
 color_mapper = LogColorMapper(palette=palette)
@@ -59,34 +59,57 @@ def multiGeomHandler(multi_geometry, coord_type, geom_type):
     # Return the coordinates
     return coord_arrays
 #---------------------------------------------------------- CENTRO DE VACUNACION ----------------------------------------------------------
-conn = psycopg2.connect(database = "postgres", user = "postgres", password = "123456",host = "ec2-3-17-190-194.us-east-2.compute.amazonaws.com",port = "5432")
+conn = psycopg2.connect(database = "cdv2021", user = "postgres", password = "2021",host = "localhost",port = "5432")
 points = geopandas.GeoDataFrame.from_postgis("SELECT * FROM ubicacion_escuelas WHERE gid <> 3269",conn,geom_col='geom')
 
+#---------------------------------------------------------- EXTRACCION DE VARIABLES X Y
 points['x'] = points.apply(getPointCoords,geom='geom',coord_type='x',axis=1)
 points['y'] = points.apply(getPointCoords,geom='geom',coord_type='y',axis=1)
-
 p_df = points.drop('geom',axis=1).copy()
-psource = ColumnDataSource(p_df)
+p_source = ColumnDataSource(p_df)
 
+#---------------------------------------------------------- CREACION DE VARIABLE MAPA
 output_file("gmap.html")
 
-map_options = GMapOptions(lat=8.9824, lng=-79.5199, map_type="roadmap",zoom=8)
+#---------------------------------------------------------- TOOPTIP HOVER
+cdb_hover = HoverTool()
+cdb_hover.tooltips = [('Address of the point', '@nombre')]
 
-p = gmap("AIzaSyBmG4umB0ThuiwtDxhNhzx2nJ0lVX4r_44", map_options, title="Centros de Vacunacion",plot_width=900,plot_height=650)
+edc_hover = HoverTool()
+edc_hover.tooltips = [('Address of the point', '@nombre')]
 
-p.circle('x','y', size=3, source=psource, color="black")
+#---------------------------------------------------------- Map Options
+cdv_map = GMapOptions(lat=8.9824, lng=-79.5199, map_type="roadmap",zoom=7)
+edc_map = GMapOptions(lat=8.9824, lng=-79.5199, map_type="roadmap",zoom=7)
 
-my_hover = HoverTool()
+#---------------------------------------------------------- Plot : CENTROS DE VACUNACION
+cdv = gmap("AIzaSyBmG4umB0ThuiwtDxhNhzx2nJ0lVX4r_44", cdv_map, title="Centros de Vacunacion")
+cdv.circle('x','y', size=5, source=p_source, color="blue")
+cdv.add_tools(cdb_hover)
 
-my_hover.tooltips = [('Address of the point', '@nombre')]
-p.add_tools(my_hover)
+#---------------------------------------------------------- ESTADO DE COVID ----------------------------------------------------------
+conn2 = psycopg2.connect(database = "cdv2021", user = "postgres", password = "2021",host = "localhost",port = "5432")
+c_pa = geopandas.GeoDataFrame.from_postgis("SELECT * FROM corregimientos__pu_",conn2,geom_col='geom')
+
+c_pa['x'] = c_pa.apply(getPointCoords,geom='geom',coord_type='x',axis=1)
+c_pa['y'] = c_pa.apply(getPointCoords,geom='geom',coord_type='y',axis=1)
+
+c_df = c_pa.drop('geom',axis=1).copy()
+c_source = ColumnDataSource(c_df)
+
+edc = gmap("AIzaSyBmG4umB0ThuiwtDxhNhzx2nJ0lVX4r_44", edc_map, title="Status de Covid en Panama")
+edc.circle('x','y', size=5, source=c_source, color="red")
+edc.add_tools(edc_hover)
 
 #---------------------------------------------------------- QUERY 1 ----------------------------------------------------------
 
 query1 = pd.read_sql_query("SELECT provincia, count(*) as escuelas FROM ubicacion_escuelas WHERE nombre like 'Escuela%' Group by provincia",conn)
+query2 = pd.read_sql_query("SELECT  FROM corregimientos__pu_ WHERE corregimiento = 'Arraijan' ",conn2)
+
 df = pd.DataFrame(query1)
 provincias = df['provincia']
 escuelas =df['escuelas']
+
 
 # output_file("index.html")
 
@@ -95,6 +118,29 @@ b= figure(y_range=provincias,  plot_width=500, plot_height=500, title="Provincia
 #Render glyph
 b.hbar(y=provincias, right=escuelas,left=0,height=0.4,color="orange",fill_alpha=0.5)
 
-grid = gridplot([[p,b]])
 
-show(grid)
+pink_line = b.hbar(y=provincias, right=escuelas,left=0,height=0.4,color="orange",fill_alpha=0.5)
+green_box = b.title
+
+
+toggle1 = Toggle(label="Green Box", button_type="success", active=True, sizing_mode='fixed')
+toggle1.js_link('active', green_box, 'visible')
+
+toggle2 = Toggle(label="Pink Line", button_type="success", active=True,sizing_mode='fixed')
+toggle2.js_link('active', pink_line, 'visible')
+
+l= grid([
+    [cdv],[edc],
+],sizing_mode='stretch_both')
+
+a = layout(
+    [ [cdv] ],
+    [ [edc] ],
+    [ [toggle1],[toggle2] ],
+    [ [b] ],sizing_mode='stretch_width'
+)
+
+
+
+show(a)
+
