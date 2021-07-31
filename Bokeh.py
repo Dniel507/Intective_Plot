@@ -2,9 +2,9 @@ import psycopg2
 import geopandas
 import pandas as pd
 import bokeh
-from bokeh.layouts import gridplot, grid,layout
+from bokeh.layouts import gridplot, grid,layout,column
 from bokeh.plotting import figure, output_file, save, show, gmap
-from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, MultiPolygons, GMapOptions,BoxAnnotation,Toggle
+from bokeh.models import ColumnDataSource, HoverTool,Panel,Tabs, LogColorMapper, MultiPolygons, GMapOptions,BoxAnnotation,Toggle
 from bokeh.palettes import RdYlBu11 as palette
 
 color_mapper = LogColorMapper(palette=palette)
@@ -104,43 +104,40 @@ edc.add_tools(edc_hover)
 #---------------------------------------------------------- QUERY 1 ----------------------------------------------------------
 
 query1 = pd.read_sql_query("SELECT provincia, count(*) as escuelas FROM ubicacion_escuelas WHERE nombre like 'Escuela%' Group by provincia",conn)
-query2 = pd.read_sql_query("SELECT  FROM corregimientos__pu_ WHERE corregimiento = 'Arraijan' ",conn2)
+query2 = pd.read_sql_query("SELECT provincia, sum(cantidad) as casos_de_covid FROM corregimientos__pu_ Group by provincia  ",conn2)
 
 df = pd.DataFrame(query1)
 provincias = df['provincia']
 escuelas =df['escuelas']
 
-
-# output_file("index.html")
-
-#Add plot
-b= figure(y_range=provincias,  plot_width=500, plot_height=500, title="Provincias x Escuelas", x_axis_label="Escuelas",tools="pan,box_select,zoom_in,zoom_out,save,reset")
-#Render glyph
-b.hbar(y=provincias, right=escuelas,left=0,height=0.4,color="orange",fill_alpha=0.5)
+df2 = pd.DataFrame(query2)
+p2 = df2['provincia']
+cc = df2['casos_de_covid']
 
 
-pink_line = b.hbar(y=provincias, right=escuelas,left=0,height=0.4,color="orange",fill_alpha=0.5)
-green_box = b.title
+b1= figure(y_range=provincias,  plot_width=500, plot_height=500, x_axis_label="Escuelas",title="Centros por Provincias")
+b1.hbar(y=provincias, right=escuelas,left=0,height=0.4,color="orange",fill_alpha=0.5)
 
+b2= figure(y_range=p2,  plot_width=500, plot_height=500, x_axis_label="Casos de covid",title="Casos de Covid")
+b2.hbar(y=p2, right=cc,left=0,height=0.4,color="orange",fill_alpha=0.5)
 
-toggle1 = Toggle(label="Green Box", button_type="success", active=True, sizing_mode='fixed')
-toggle1.js_link('active', green_box, 'visible')
-
-toggle2 = Toggle(label="Pink Line", button_type="success", active=True,sizing_mode='fixed')
-toggle2.js_link('active', pink_line, 'visible')
-
-l= grid([
-    [cdv],[edc],
-],sizing_mode='stretch_both')
-
-a = layout(
+l1 = layout(
     [ [cdv] ],
     [ [edc] ],
-    [ [toggle1],[toggle2] ],
-    [ [b] ],sizing_mode='stretch_width'
+    [ [b1]],
+    sizing_mode='stretch_width'
 )
 
+l2 = layout(
+    [ [cdv] ],
+    [ [edc] ],
+    [ [b2] ],
+    sizing_mode='stretch_width'
+)
 
+tab1 = Panel(child=l1, title="Centros por Provincias")
+tab2 = Panel(child=l2, title="Casos de Covid")
 
-show(a)
+show(Tabs(tabs=[ tab1, tab2 ]))
+
 
