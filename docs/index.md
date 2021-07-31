@@ -7,12 +7,12 @@ To this page you should add links to your interactive html-maps that are located
 Here is an example how to do it in MarkDown for user HTenkanen:
 
 ```
-[Link to test map](https://dniel507.github.io/Intective_Plot/docs/panama_map.html)
+[Link to test map](https://dniel507.github.io/Intective_Plot/docs/panama_ma.html)
 ```
 
 ## My maps
 
 Add here links to the maps that you have created:
 
- - [Link to test map](https://dniel507.github.io/Intective_Plot/panama_map.html)
+ - [Link to test map](https://dniel507.github.io/Intective_Plot/panama_ma.html)
  - Replace this with your link
